@@ -1,0 +1,228 @@
+select * from departamento;
+
+select * from gerente;
+
+select * from empregado;
+
+-- ADS 2ª Manha PCRxPD Turma 2 (Terça) --
+
+select d.cpf, d.nome, d.dataNasc, d.parentesco, e.cpf, e.nome
+	from dependente d, empregado e
+		where d.empregado_cpf = e.cpf and
+			e.salario >= 2000;
+
+select d.cpf, d.nome, d.dataNasc, d.parentesco, e.cpf, e.nome
+	from dependente d
+		inner join empregado e on d.empregado_cpf = e.cpf
+			where e.salario >= 2000
+				order by e.nome;
+
+select e.cpf "CPF Empregado", e.nome "Empregado", e.salario "Salário", o.nome "Ocupação",
+	d.nome "Departamento", d.localdep "Local Departamento", eg.nome "Gerente"
+		from trabalhar t
+			inner join empregado e on e.cpf = t.empregado_cpf
+			inner join ocupacao o on o.cbo = t.ocupacao_cbo
+            inner join departamento d on d.iddepartamento = t.departamento_iddepartamento
+            inner join gerente g on g.empregado_cpf = d.gerente_empregado_cpf
+            inner join empregado eg on eg.cpf = g.empregado_cpf
+				order by e.nome;
+			
+select v.dataVenda "Data", p.nome "Produto", p.categoria "Categoria", p.valor "Preco Und",
+				iv.qtdProduto "Quantidade", v.valorTotal "Valor Total", e.nome "Empregado",
+				d.nome "Departamento", eg.nome "Gerente"
+		from itensVenda iv 
+			inner join vendas v on v.idvendas = iv.vendas_idvendas
+            inner join estoque p on p.idproduto = iv.estoque_idproduto
+            inner join empregado e on e.cpf = v.empregado_cpf
+            inner join trabalhar t on t.empregado_cpf = e.cpf
+            inner join departamento d on d.iddepartamento = t.departamento_iddepartamento
+            inner join gerente g on g.empregado_cpf = d.gerente_empregado_cpf
+            inner join empregado eg on eg.cpf = g.empregado_cpf
+				order by v.dataVenda;
+            
+select e.cpf "CPF Empregado", e.nome "Empregado", count(v.empregado_cpf) "Quantidade Venda",
+	sum(v.valorTotal) "Total das Vendas"
+	from vendas v
+		inner join empregado e on e.cpf = v.empregado_cpf
+			group by v.empregado_cpf;
+ 
+select substring(v.dataVenda, 1, 10) "Data Venda", 
+	count(substring(v.dataVenda, 1, 10)) "Quantidade por Dia",
+	sum(v.valorTotal) "Valor do Dia"
+		from vendas v
+			group by (substring(v.dataVenda, 1, 10));
+    
+select e.cpf "CPF Empregado", e.nome "Empregado", e.salario "Salário", o.nome "Ocupação",
+	d.nome "Departamento", d.localdep "Local Departamento", eg.nome "Gerente"
+		from trabalhar t
+			inner join empregado e on e.cpf = t.empregado_cpf
+			inner join ocupacao o on o.cbo = t.ocupacao_cbo
+            inner join departamento d on d.iddepartamento = t.departamento_iddepartamento
+            inner join gerente g on g.empregado_cpf = d.gerente_empregado_cpf
+            inner join empregado eg on eg.cpf = g.empregado_cpf
+				where e.cpf in (select empregado_cpf from dependente)
+					order by e.nome;
+
+ select e.cpf "CPF Empregado", e.nome "Empregado", e.salario "Salário", o.nome "Ocupação",
+	d.nome "Departamento", d.localdep "Local Departamento", eg.nome "Gerente"
+		from trabalhar t
+			inner join empregado e on e.cpf = t.empregado_cpf
+			inner join ocupacao o on o.cbo = t.ocupacao_cbo
+            inner join departamento d on d.iddepartamento = t.departamento_iddepartamento
+            inner join gerente g on g.empregado_cpf = d.gerente_empregado_cpf
+            inner join empregado eg on eg.cpf = g.empregado_cpf
+				where e.cpf in (select empregado_cpf from vendas)
+					order by e.nome;
+            
+select e.cpf "CPF Empregado", e.nome "Empregado", e.salario "Salário", o.nome "Ocupação",
+	d.nome "Departamento", d.localdep "Local Departamento", eg.nome "Gerente"
+		from trabalhar t
+			inner join empregado e on e.cpf = t.empregado_cpf
+			inner join ocupacao o on o.cbo = t.ocupacao_cbo
+            inner join departamento d on d.iddepartamento = t.departamento_iddepartamento
+            inner join gerente g on g.empregado_cpf = d.gerente_empregado_cpf
+            inner join empregado eg on eg.cpf = g.empregado_cpf
+				where e.salario >= (select avg(salario) from empregado)
+					order by e.nome;            
+            
+select e.cpf "CPF Empregado", e.nome "Empregado", e.salario "Salário", o.nome "Ocupação",
+	d.nome "Departamento", d.localdep "Local Departamento", eg.nome "Gerente"
+		from trabalhar t
+			inner join empregado e on e.cpf = t.empregado_cpf
+			inner join ocupacao o on o.cbo = t.ocupacao_cbo
+            inner join departamento d on d.iddepartamento = t.departamento_iddepartamento
+            inner join gerente g on g.empregado_cpf = d.gerente_empregado_cpf
+            inner join empregado eg on eg.cpf = g.empregado_cpf
+				where e.salario <= (select avg(salario) from empregado)
+					order by e.nome;              
+    
+select d.nome "Departamento", d.email "Email", d.localDep "Local Departamento", d.horario "Horário", 
+	d.descricao "Descrição Departamento", d.gerente_empregado_cpf "CPF Gerente", e.nome "Gerente"
+     from departamento d, gerente g, empregado e
+		where d.gerente_empregado_cpf = g.empregado_cpf and
+				g.empregado_cpf = e.cpf;
+
+select d.nome "Departamento", d.email "Email", d.localDep "Local Departamento", d.horario "Horário", 
+	d.descricao "Descrição Departamento", d.gerente_empregado_cpf "CPF Gerente", e.nome "Gerente"
+     from departamento d 
+		inner join gerente g on d.Gerente_Empregado_CPF = g.empregado_cpf
+        inner join empregado e on g.empregado_cpf = e.cpf;
+
+select d.nome, d.cpf, d.dataNasc, d.parentesco, e.nome, e.cpf
+	from dependente as d, empregado e
+		where d.empregado_cpf = e.cpf;
+
+select d.nome, d.cpf, d.dataNasc, d.parentesco, e.nome, e.cpf
+	from dependente as d
+		inner join empregado e on d.empregado_cpf = e.cpf;
+        
+select e.nome "Empregado", e.dataAdm "Data Admissão", d.nome "Departamento", 
+	d.localDep "Local Departamento", o.nome "Ocupação", e.salario "Salário"
+		from trabalhar t
+			inner join empregado e on t.empregado_cpf = e.cpf
+			inner join departamento d on t.Departamento_idDepartamento = d.iddepartamento
+			inner join ocupacao o on t.ocupacao_cbo = o.cbo;
+
+-- ADS 2ª Noite PCRxPD Turma 1 (Terça) --
+-- cross join --
+select d.cpf, d.nome, d.dataNasc, d.parentesco, e.cpf, e.nome
+	from dependente d, empregado e; 	
+
+-- inner join (implicita) --
+select d.cpf, d.nome, d.dataNasc, d.parentesco, e.cpf, e.nome
+	from dependente d, empregado e
+		where d.empregado_cpf = e.cpf; 
+
+-- inner join (explicita) --
+select d.cpf, d.nome, d.dataNasc, d.parentesco, e.cpf, e.nome
+	from dependente d
+		inner join empregado e on d.empregado_cpf = e.cpf;
+
+-- ADS 2ª Manhã PCRxPD Turma 1 (Quarta) --
+-- cross join --
+select d.cpf, d.nome, d.dataNasc, d.parentesco, e.cpf, e.nome
+	from dependente d, empregado e;
+    
+-- inner join (implicita) --
+select d.cpf, d.nome, d.dataNasc, d.parentesco, e.cpf, e.nome
+	from dependente d, empregado e
+		where d.empregado_cpf = e.cpf;
+        
+-- inner join (explicito) --
+select d.cpf, d.nome, d.dataNasc, d.parentesco, e.cpf, e.nome
+	from dependente d
+		inner join empregado e on d.empregado_cpf = e.cpf;
+
+select f.anoRef, f.dataIni, f.dataFim, f.qtdDias, e.nome
+	from ferias f
+		inner join empregado e on e.cpf = f.empregado_cpf
+			order by f.anoref;
+
+select f.anoRef, f.dataIni, f.dataFim, f.qtdDias, e.nome
+	from ferias f
+		inner join empregado e on e.cpf = f.empregado_cpf
+			order by f.anoref desc;
+
+select f.anoRef, f.dataIni, f.dataFim, f.qtdDias, e.nome
+	from ferias f
+		inner join empregado e on e.cpf = f.empregado_cpf
+			where e.nome like "João%"
+				order by f.anoref desc;
+
+select f.anoRef "Ano Referência", f.dataIni "Data Início", f.dataFim "Data Fim", 
+	f.qtdDias "Quantidade Dias", e.nome "Empregado"
+	from ferias f
+		inner join empregado e on e.cpf = f.empregado_cpf
+        inner join trabalhar t on t.empregado_cpf = e.cpf
+        inner join departamento d on d.iddepartamento = t.departamento_iddepartamento
+			where d.nome like "Administra%"
+				order by f.anoref desc;
+
+select e.cpf "CPF Empregado", e.nome "Empregado", e.salario "Salário", o.nome "Ocupação",
+	d.nome "Departamento", d.localdep "Local Departamento"
+		from trabalhar t
+			inner join empregado e on e.cpf = t.empregado_cpf
+            inner join ocupacao o on o.cbo = t.ocupacao_cbo
+            inner join departamento d on d.iddepartamento = t.departamento_iddepartamento
+				order by d.nome;
+                
+select e.cpf "CPF Empregado", e.nome "Empregado", e.salario "Salário", o.nome "Ocupação",
+	d.nome "Departamento", d.localdep "Local Departamento", eg.nome "Gerente"
+		from trabalhar t
+			inner join empregado e on e.cpf = t.empregado_cpf
+            inner join ocupacao o on o.cbo = t.ocupacao_cbo
+            inner join departamento d on d.iddepartamento = t.departamento_iddepartamento
+            inner join gerente g on g.empregado_cpf = d.gerente_empregado_cpf
+            inner join empregado eg on eg.cpf = g.empregado_cpf
+				order by d.nome;
+            
+select e.cpf "CPF Empregado", e.nome "Empregado", e.salario "Salário", o.nome "Ocupação",
+	d.nome "Departamento", d.localdep "Local Departamento", eg.nome "Gerente"
+		from trabalhar t
+			inner join empregado e on e.cpf = t.empregado_cpf
+            inner join ocupacao o on o.cbo = t.ocupacao_cbo
+            inner join departamento d on d.iddepartamento = t.departamento_iddepartamento
+            inner join gerente g on g.empregado_cpf = d.gerente_empregado_cpf
+            inner join empregado eg on eg.cpf = g.empregado_cpf
+				where e.salario >= (select avg(salario) from empregado)
+						order by d.nome;
+
+create view RelTrabalho as
+	select e.cpf "CPF Empregado", e.nome "Empregado", e.salario "Salário", o.nome "Ocupação",
+		d.nome "Departamento", d.localdep "Local Departamento", eg.nome "Gerente"
+			from trabalhar t
+				inner join empregado e on e.cpf = t.empregado_cpf
+				inner join ocupacao o on o.cbo = t.ocupacao_cbo
+				inner join departamento d on d.iddepartamento = t.departamento_iddepartamento
+				inner join gerente g on g.empregado_cpf = d.gerente_empregado_cpf
+				inner join empregado eg on eg.cpf = g.empregado_cpf
+					order by d.nome;
+
+select * from reltrabalho;
+
+select * from reltrabalho
+	where `Salário` <= (select avg(salario) from empregado);
+    
+    
+    
+    
